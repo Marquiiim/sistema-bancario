@@ -67,7 +67,11 @@ while True:
             SystemError("[ERROR] Valor invalido, tente novamente.")
         else:
             deposit(value_deposit)
-            print(deposit_menu)
+            print(f"""
+                    Valor de R${value_deposit} depositado com sucesso!
+
+                    Saldo atual da conta: R${balance:.2f}
+            """)
 
     elif option == "S":
 
@@ -77,7 +81,11 @@ while True:
             SystemError("[ERROR] Não foi possível realizar o saque, verifique seu limite de saque ou seu saldo atual.")
         else:
             withdraw(value_withdraw)
-            print(withdraw_menu)
+            print(f"""
+                    Valor de R${value_withdraw} retirado com sucesso!
+
+                    Saldo atual da conta: R${balance:.2f}
+            """)
 
 
     elif option == "E":
