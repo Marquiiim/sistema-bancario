@@ -1,15 +1,8 @@
-# 1 - É POSSÍVEL DEPOSITAR APENAS VALORES POSITIVOS
-# 2 - TRABALHANDO APENAS COM UM USUÁRIO, SEM IDENTIFICAÇÃO
-# 3 - TODOS DEPÓSITOS DEVEM SER ARMAZENADOS EM UMA VARIÁVEL E EXIBIDOS NA OPERAÇÃO DE EXTRATO.
-# 4 - APENAS 3 SAQUES DIÁRIOS
-# 5 - LIMITE DE 500 REAIS
-# 6 - CASO NÃO HAJA SALDO, EXIBIR MENSAGEM
-
 # VARIÁVEIS INICIAIS
 
 balance = 0
 LIMIT = 500
-extract = ""
+extract = []
 number_withdrawals = 0
 LIMIT_WITHDRAWALS = 3
 
@@ -24,32 +17,19 @@ menu = """"
 ===============================
 =>"""
 
-deposit_menu = f"""
-======== ÁREA DE DEPÓSITO ========
-Saldo atual da conta: R${balance:.2f}
-
-    Digite o valor do deposito:
-=>"""
-
-withdraw_menu = f"""
-======== ÁREA DE SAQUE ========
-Saldo atual da conta: R${balance:.2f}
-
-    Digite o valor do saque:
-=>"""
-
 # FUNÇÕES
 
 def deposit(value):
     global balance, number_withdrawals, extract
 
     balance += value
-    number_withdrawals += 1
+    extract.append(f"Depósito - R$ + {value:.2f}")
 
 def withdraw(value):
     global balance, number_withdrawals, extract
 
     balance -= value
+    extract.append(f"Saque - R$ - {value:.2f}")
     number_withdrawals += 1
 
 
@@ -60,37 +40,63 @@ while True:
     option = input(menu).upper()
 
     if option == "D":
-        
-        value_deposit = float(input(deposit_menu))
+        while True:
+            value_deposit = float(input(
+                f"""
+                ======== ÁREA DE DEPÓSITO ========
+                Saldo atual da conta: R${balance:.2f}
 
-        if value_deposit >= 0:
-            SystemError("[ERROR] Valor invalido, tente novamente.")
-        else:
-            deposit(value_deposit)
-            print(f"""
+                Digite o valor do deposito:
+                =>"""
+            ))
+
+            if value_deposit >= 0:
+                deposit(value_deposit)
+                print(f"""
                     Valor de R${value_deposit} depositado com sucesso!
 
                     Saldo atual da conta: R${balance:.2f}
-            """)
+                """)
+                break
+            else:
+                print("[ERROR] Valor inválido, tente novamente.")
 
     elif option == "S":
+        while True:
+            value_withdraw = float(input(
+                f"""
+                ======== ÁREA DE SAQUE ========
+                Saldo atual da conta: R${balance:.2f}
 
-        value_withdraw = float(input(withdraw_menu))
+                Digite o valor do saque:
+                =>"""
+            ))
 
-        if value_withdraw > balance and value_withdraw > LIMIT:
-            SystemError("[ERROR] Não foi possível realizar o saque, verifique seu limite de saque ou seu saldo atual.")
-        else:
-            withdraw(value_withdraw)
-            print(f"""
+            if value_withdraw > balance:
+                print(f"[ERROR] Seu saldo atual é de apenas R${balance:.2f}, não foi possível realizar o saque.")
+            elif value_withdraw > LIMIT:
+                print(f"[ERROR] Limite de saque de no máximo R${LIMIT:.2f} por dia.")
+            else:
+                withdraw(value_withdraw)
+                print(f"""
                     Valor de R${value_withdraw} retirado com sucesso!
 
                     Saldo atual da conta: R${balance:.2f}
-            """)
+                """)
+                break
 
 
     elif option == "E":
-        print("teste")
+        extract_str = "\n".join(extract)
+        extract_bank = f"""
+    ======== EXTRATO ========
+    {extract_str if extract else "Não foram realizadas movimentações"}
+    """
+
+        print(extract_bank)
+
     elif option == "X":
-        raise SystemExit("Operação finalizada.")
+        raise SystemExit("Operação finalizada com sucesso, até a próxima.")
+    
     else:
         print("Operação inválida, por favor selecione novamente a operação desejada.")
