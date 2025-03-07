@@ -1,10 +1,20 @@
+from datetime import datetime, timedelta
+
 # VARIÁVEIS INICIAIS
 
 balance = 0
 LIMIT = 500
 extract = []
 number_withdrawals = 0
-LIMIT_WITHDRAWALS = 3
+number_transaction = 0
+date_now = datetime.now()
+date_next = date_now - timedelta(days=1)
+
+"""
+============= REGRAS TRANSACIONAIS =============
+            LIMIT_WITHDRAWALS = 3
+            LIMIT_TRANSACTION = 10
+"""
 
 # TEMPLATES
 
@@ -20,17 +30,19 @@ menu = """"
 # FUNÇÕES
 
 def deposit(value):
-    global balance, number_withdrawals, extract
+    global balance, number_transaction, extract
 
     balance += value
-    extract.append(f"Depósito - R$ + {value:.2f}")
+    extract.append(f"Depósito - R$ +{value:.2f} | Dia: {date_now.strftime('%d/%m/%Y')} - {date_now.strftime('%H:%M:%S')}")
+    number_transaction += 1
 
 def withdraw(value):
-    global balance, number_withdrawals, extract
+    global balance, number_transaction, number_withdrawals, extract
 
     balance -= value
-    extract.append(f"Saque - R$ - {value:.2f}")
+    extract.append(f"Saque - R$ - {value:.2f} | Dia: {date_now.strftime('%d/%m/%Y')} - {date_now.strftime('%H:%M:%S')}")
     number_withdrawals += 1
+    number_transaction +=1
 
 
 # OPÇÕES
@@ -39,11 +51,12 @@ while True:
 
     option = input(menu).upper()
 
+
     if option == "D":
         while True:
             value_deposit = float(input(
                 f"""
-                ======== ÁREA DE DEPÓSITO ========
+                ============= ÁREA DE DEPÓSITO =============
                 Saldo atual da conta: R${balance:.2f}
 
                 Digite o valor do deposito:
@@ -51,21 +64,28 @@ while True:
             ))
 
             if value_deposit >= 0:
-                deposit(value_deposit)
-                print(f"""
-                    Valor de R${value_deposit} depositado com sucesso!
+                if number_transaction == 10:
+                    print(f"[ERROR] Você excedeu o número de transações diárias, só poderá fazer novas transações a partir do dia {date_next.strftime('%d/%m/%Y')} - {date_next.strftime('%H:%M:%S')}")
+                    break
 
-                    Saldo atual da conta: R${balance:.2f}
-                """)
-                break
+                else:
+                    deposit(value_deposit)
+                    print(f"""
+                        Valor de R${value_deposit} depositado com sucesso!
+
+                        Saldo atual da conta: R${balance:.2f}
+                    """)
+                    break
+
             else:
                 print("[ERROR] Valor inválido, tente novamente.")
+
 
     elif option == "S":
         while True:
             value_withdraw = float(input(
                 f"""
-                ======== ÁREA DE SAQUE ========
+                ============= ÁREA DE SAQUE =============
                 Saldo atual da conta: R${balance:.2f}
 
                 Digite o valor do saque:
@@ -74,22 +94,29 @@ while True:
 
             if value_withdraw > balance:
                 print(f"[ERROR] Seu saldo atual é de apenas R${balance:.2f}, não foi possível realizar o saque.")
+
             elif value_withdraw > LIMIT:
                 print(f"[ERROR] Limite de saque de no máximo R${LIMIT:.2f} por dia.")
+            
             else:
-                withdraw(value_withdraw)
-                print(f"""
+                if number_transaction > 10:
+                    print(f"[ERROR] Você excedeu o número de transações diárias, só poderá fazer novas transações a partir do dia {date_next.strftime('%d/%m/%Y')} - {date_next.strftime('%H:%M:%S')}")
+                    break
+
+                else:
+                    withdraw(value_withdraw)
+                    print(f"""
                     Valor de R${value_withdraw} retirado com sucesso!
 
                     Saldo atual da conta: R${balance:.2f}
-                """)
-                break
+                    """)
+                    break
 
 
     elif option == "E":
         extract_str = "\n".join(extract)
         extract_bank = f"""
-    ======== EXTRATO ========
+    ============= EXTRATO =============
     {extract_str if extract else "Não foram realizadas movimentações"}
     """
 
