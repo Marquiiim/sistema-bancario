@@ -7,8 +7,6 @@ LIMIT = 500
 extract = []
 number_withdrawals = 0
 number_transaction = 0
-date_now = datetime.now()
-date_next = date_now - timedelta(days=1)
 
 """
 ============= REGRAS TRANSACIONAIS =============
@@ -69,6 +67,8 @@ while True:
                     break
 
                 else:
+                    date_now = datetime.now()
+                    date_next = date_now - timedelta(days=1)
                     deposit(value_deposit)
                     print(f"""
                         Valor de R${value_deposit} depositado com sucesso!
@@ -99,11 +99,13 @@ while True:
                 print(f"[ERROR] Limite de saque de no máximo R${LIMIT:.2f} por dia.")
             
             else:
-                if number_transaction > 10:
+                if number_transaction == 10:
                     print(f"[ERROR] Você excedeu o número de transações diárias, só poderá fazer novas transações a partir do dia {date_next.strftime('%d/%m/%Y')} - {date_next.strftime('%H:%M:%S')}")
                     break
 
                 else:
+                    date_now = datetime.now()
+                    date_next = date_now - timedelta(days=1)
                     withdraw(value_withdraw)
                     print(f"""
                     Valor de R${value_withdraw} retirado com sucesso!
@@ -117,7 +119,7 @@ while True:
         extract_str = "\n".join(extract)
         extract_bank = f"""
     ============= EXTRATO =============
-    {extract_str if extract else "Não foram realizadas movimentações"}
+    {extract_str if extract else "Não foram realizadas movimentações."}
     """
 
         print(extract_bank)
