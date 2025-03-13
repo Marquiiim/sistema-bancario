@@ -16,7 +16,7 @@ number_transaction = 0
 
 # TEMPLATES
 
-menu = """"
+menu = """
 ======== MENU BANCÁRIO ========
         [D] Depositar
         [S] Sacar
